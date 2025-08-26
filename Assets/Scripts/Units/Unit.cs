@@ -44,12 +44,14 @@ public class Unit
     public int Health;
     public int Speed;
 
+    public int abilityInt;
+
     public UnitClass Class;
     public UnitSubClass SubClass;
 
     public Rarity Rarity;
 
-    public Unit(string name, int age, int attack, int defense, int health, int speed, UnitClass unitClass, UnitSubClass unitSubClass, Rarity rarity)
+    public Unit(string name, int age, int attack, int defense, int health, int speed, UnitClass unitClass, UnitSubClass unitSubClass, int abilityInt Rarity rarity)
     {
         Name = name;
         Age = age;
@@ -59,6 +61,8 @@ public class Unit
         Health = health;
         Speed = speed;
 
+        abilityInt = abilityInt;
+
         Class = unitClass;
         SubClass = unitSubClass;
         Rarity = rarity;
@@ -66,6 +70,6 @@ public class Unit
 
     public override string ToString()
     {
-        return $"{Name} (Age: {Age}, Class: {Class}, SubClass: {SubClass}, Rarity: {Rarity}, Attack: {Attack}, Defense: {Defense}, Health: {Health}, Speed: {Speed})";
+        return $"{Name} (Age: {Age}, Class: {Class}, SubClass: {SubClass}, Rarity: {Rarity}, Attack: {Attack}, Defense: {Defense}, Health: {Health}, Speed: {Speed}, Ability: {abilityInt})";
     }
 }

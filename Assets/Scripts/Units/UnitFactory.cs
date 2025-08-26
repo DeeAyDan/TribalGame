@@ -18,8 +18,9 @@ public class UnitFactory
         int health = GenerateRandomStat(subClass, "health") * rarityMultiplier;
         int speed = GenerateRandomStat(subClass, "speed") * rarityMultiplier;
 
+        int abilityInt = SetAbilityInt(subClass);
 
-        return new Unit(name, age, attack, defense, health, speed, unitClass, subClass, rarity);
+        return new Unit(name, age, attack, defense, health, speed, unitClass, subClass, abilityInt, rarity);
 
     }
 
@@ -34,6 +35,7 @@ public class UnitFactory
         return Random.Range(14, 40);
     }
 
+    // TODO Need balancing for the classes
     private static int GenerateRandomStat(UnitSubClass subClass, string stat)
     {
         switch ((subClass, stat)){
@@ -157,6 +159,37 @@ public class UnitFactory
                 return (UnitSubClass)Random.Range(6, 11); // Healer, Runner, Herbalist, Crafter, Alchemist
             default:
                 return UnitSubClass.Tank; // Default case
+        }
+    }
+
+    private static int SetAbilityInt(UnitSubClass subclass)
+    {
+        switch (subclass)
+        {
+            case UnitSubClass.Tank:
+                return 1;
+            case UnitSubClass.Berserker:
+                return 2;
+            case UnitSubClass.Slammer:
+                return 3;
+            case UnitSubClass.Archer:
+                return 4;
+            case UnitSubClass.SpearThrower:
+                return 5;
+            case UnitSubClass.DartBlower:
+                return 6;
+            case UnitSubClass.Healer:
+                return 7;
+            case UnitSubClass.Runner:
+                return 8;
+            case UnitSubClass.Herbalist:
+                return 9;
+            case UnitSubClass.Crafter:
+                return 10;
+            case UnitSubClass.Alchemist:
+                return 11;
+            default:
+                return 0;
         }
     }
 

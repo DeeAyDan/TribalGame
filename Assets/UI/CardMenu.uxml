@@ -1,0 +1,38 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/CardMenuStyle.uss?fileID=7433441132597879392&amp;guid=48e4618269bfb634988d5a82dd9a9f7e&amp;type=3#CardMenuStyle" />
+    <ui:VisualElement name="Panel" class="panel" style="flex-grow: 1; justify-content: center; background-color: rgba(66, 47, 37, 0.67);">
+        <ui:VisualElement name="InventoryContainer" style="flex-grow: 1; width: 100%; height: 100%; max-height: none; background-color: rgb(66, 47, 37); border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0; border-top-width: 20px; border-right-width: 20px; border-bottom-width: 20px; border-left-width: 20px; border-left-color: rgb(41, 21, 10); border-right-color: rgb(41, 21, 10); border-top-color: rgb(41, 21, 10); border-bottom-color: rgb(41, 21, 10);">
+            <ui:VisualElement name="ActiveCards" class="activePanel" style="flex-grow: 1; padding-right: 0;">
+                <ui:VisualElement name="ActiveCard1" class="activeCard" style="flex-grow: 1; border-right-width: 0; border-left-width: 30px; border-bottom-width: 40px;" />
+                <ui:VisualElement name="ActiveCard2" class="activeCard" style="flex-grow: 1; align-items: flex-start; align-self: center; border-right-width: 0; border-bottom-width: 40px; border-left-width: 20px;" />
+                <ui:VisualElement name="ActiveCard3" class="activeCard" style="flex-grow: 1; align-self: flex-start; border-bottom-width: 40px;" />
+                <ui:VisualElement name="ActiveCard4" class="activeCard" style="flex-grow: 1; align-self: center; border-right-width: 20px; border-bottom-width: 40px;" />
+                <ui:VisualElement name="ActiveCard5" class="activeCard" style="flex-grow: 1; border-right-width: 30px; border-bottom-width: 40px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="ReservedCards" style="flex-grow: 1;">
+                <ui:VisualElement name="ReservedRow1" class="ReservedRow" style="flex-grow: 1;">
+                    <ui:VisualElement name="ReservedCard1" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard2" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard3" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard4" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard5" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard6" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard7" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard8" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard9" style="flex-grow: 1;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="ReservedRow2" class="ReservedRow" style="flex-grow: 1;">
+                    <ui:VisualElement name="ReservedCard10" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard11" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard12" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard13" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard14" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard15" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard16" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard17" style="flex-grow: 1;" />
+                    <ui:VisualElement name="ReservedCard18" style="flex-grow: 1;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
