@@ -51,7 +51,7 @@ public class Unit
 
     public Rarity Rarity;
 
-    public Unit(string name, int age, int attack, int defense, int health, int speed, UnitClass unitClass, UnitSubClass unitSubClass, int abilityInt Rarity rarity)
+    public Unit(string name, int age, int attack, int defense, int health, int speed, UnitClass unitClass, UnitSubClass unitSubClass, int abilityInt, Rarity rarity)
     {
         Name = name;
         Age = age;
