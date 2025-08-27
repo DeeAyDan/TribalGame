@@ -8,28 +8,33 @@ using UnityEditor;
 
 public class FightManager : MonoBehaviour
 {
-    public static GameObject[] team;
-    public static GameObject[] enemyTeam;
+    public GameObject[] team;
+    public GameObject[] enemyTeam;
     public List<GameObject> allEntities = new List<GameObject>();
     public Transform[] unitSpawn;
     public Transform[] enemySpawn;
 
+    public Transform instantiationParent;
+
     public float avrSpeed;
 
-    public List<UnitStats> turnOrder = new List<UnitStats>();
+    public List<GameObject> turnOrder = new List<GameObject>();
+    public List<GameObject> turnOrderReal = new List<GameObject>();
     public List<float> turnOrderCounter = new List<float>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         for (int i = 0; i < team.Length; i++)
         {
-            Instantiate(team[i], unitSpawn[i]);
-            allEntities.Add(team[i]);
+            GameObject InstantiatedUnit = Instantiate(team[i], instantiationParent);
+            InstantiatedUnit.transform.position = unitSpawn[i].position;
+            allEntities.Add(InstantiatedUnit);
         }
         for (int i = 0; i < enemyTeam.Length; i++)
         {
-            Instantiate(enemyTeam[i], enemySpawn[i]);
-            allEntities.Add(enemyTeam[i]);
+            GameObject InstantiatedEnemy = Instantiate(enemyTeam[i], instantiationParent);
+            InstantiatedEnemy.transform.position = enemySpawn[i].position;
+            allEntities.Add(InstantiatedEnemy);
         }
         
     }
@@ -38,7 +43,9 @@ public class FightManager : MonoBehaviour
        avrSpeed = averageSpeed();
        for (int i = 0; i< allEntities.Count; i++)
        {
-            allEntities[i].GetComponent<UnitStats>().currentAvrSpeed = allEntities[i].GetComponent<UnitStats>().currentSpeed / avrSpeed;
+            allEntities[i].GetComponent<UnitStats>().currentAvrSpeed = allEntities[i].GetComponent<UnitStats>().currentSpeed/avrSpeed;
+            
+            print(allEntities[i].GetComponent<UnitStats>().currentSpeed/avrSpeed);
        }
 
         TurnOrderCalculation();
@@ -62,42 +69,59 @@ public class FightManager : MonoBehaviour
             enemyCounter++;
             speedSum += enemyTeam[i].GetComponent<UnitStats>().baseSpeed;
         }
-        return speedSum / enemyCounter;
+        return speedSum / (enemyCounter+teamCounter);
     }
 
     public void TurnOrderCalculation()
     {
-        
+        int removeCounter = 0;
         
         allEntities.Sort((a, b) => b.GetComponent<UnitStats>().currentAvrSpeed.CompareTo(a.GetComponent<UnitStats>().currentAvrSpeed));
+        turnOrder.Clear();
         for(int i=0; i<allEntities.Count; i++)
         {
-            turnOrder.Clear();
-            turnOrder.Add(allEntities[i].GetComponent<UnitStats>());
-            if (turnOrderCounter[i] >= 1)
+            
+            turnOrder.Add(allEntities[i]);
+            //print("added " + allEntities[i]);
+            if (turnOrderCounter.Count == allEntities.Count && turnOrderCounter[i] >= 0 )
             {
-                turnOrder.Add(allEntities[i].GetComponent<UnitStats>());
-                turnOrder[i + 1].currentAvrSpeed = 1;
-                turnOrderCounter[i] -= 1;
-                turnOrder.Sort((a, b) => b.currentAvrSpeed.CompareTo(a.currentAvrSpeed));
+                turnOrderCounter[i] += allEntities[i].GetComponent<UnitStats>().currentAvrSpeed - 1;
+               // print("substracted number " + turnOrder[i]);
+                
+
             }
-            if (turnOrderCounter[i] <= -1)
+            else if(turnOrderCounter.Count == allEntities.Count && turnOrderCounter[i] < 0)
             {
-                turnOrder.Add(allEntities[i].GetComponent<UnitStats>());
-                turnOrder.RemoveAt(i);
+                //print("removed " + turnOrder[i]);
+                turnOrder.RemoveAt(i-removeCounter);
+                removeCounter += 1;
                 turnOrderCounter[i] += 1;
-                turnOrder.Sort((a, b) => b.currentAvrSpeed.CompareTo(a.currentAvrSpeed));
             }
-            if(turnOrderCounter.Count < allEntities.Count)
+            else if (turnOrderCounter.Count < allEntities.Count)
             {
                 turnOrderCounter.Add(allEntities[i].GetComponent<UnitStats>().currentAvrSpeed - 1);
             }
-            else
+            print(Mathf.RoundToInt(Mathf.Abs(turnOrderCounter[i])));
+            
+            if (turnOrderCounter[i] >= 1)
             {
-                turnOrderCounter[i] += allEntities[i].GetComponent<UnitStats>().currentAvrSpeed - 1;
+                for (int y = 0; y < Mathf.RoundToInt(Mathf.Abs(turnOrderCounter[i]));)
+                {
+                    turnOrder.Add(allEntities[i]);
+                   
+                    turnOrderCounter[i] -= 1;
+                    turnOrder.Sort((a, b) => b.GetComponent<UnitStats>().currentAvrSpeed.CompareTo(a.GetComponent<UnitStats>().currentAvrSpeed));
+                }
             }
             
+            
+            
+            
         }
+    }
+    public void NextRound() 
+    {
+        TurnOrderCalculation();
     }
 
     // Update is called once per frame

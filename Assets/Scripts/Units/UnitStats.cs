@@ -15,7 +15,7 @@ public class UnitStats : MonoBehaviour
 
     public float currentAvrSpeed;
 
-    void Start()
+    void Awake()
     {
         currentHealth = baseHealth;
         currentDamage = baseDamage;
