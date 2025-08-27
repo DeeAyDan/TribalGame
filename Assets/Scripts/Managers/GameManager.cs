@@ -4,7 +4,14 @@ using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject unitPrefab;
+
+    [Header("Prefabs For Classes")]
+    public GameObject meleeCardPrefab;
+    public GameObject rangedCardPrefab;
+    public GameObject supportCardPrefab;
+
+    [Header("UI Parent")]
+    public Transform cardParent;
 
     private void Update()
     {
@@ -18,14 +25,28 @@ public class GameManager : MonoBehaviour
     {
 
         Unit newUnit = UnitFactory.GenerateRandomUnit();
-        GameObject go = Instantiate(unitPrefab, GetRandomPosition(), Quaternion.identity);
-        
-        UnitBehaviour behaviour = go.GetComponent<UnitBehaviour>();
-        behaviour.Setup(newUnit);
+
+        GameObject prefab = GetCardPrefab(newUnit.Class);
+        GameObject cardGo = Instantiate(prefab, cardParent);
+
+        UnitCardUI ui = cardGo.GetComponent<UnitCardUI>();
+        ui.Setup(newUnit, null);
+
     }
 
-    Vector3 GetRandomPosition()
+    GameObject GetCardPrefab(UnitClass unitClass)
     {
-        return new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5));
+        switch (unitClass)
+        {
+            case UnitClass.Melee:
+                return meleeCardPrefab;
+            case UnitClass.Ranged:
+                return rangedCardPrefab;
+            case UnitClass.Support:
+                return supportCardPrefab;
+            default:
+                Debug.LogError("No prefab found for unit class: " + unitClass);
+                return null;
+        }
     }
 }
