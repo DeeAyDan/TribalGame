@@ -34,6 +34,7 @@ public enum Rarity
     Legendary
 }
 
+[System.Serializable]
 public class Unit
 {
     public string Name;
@@ -44,7 +45,7 @@ public class Unit
     public int Health;
     public int Speed;
 
-    public int abilityInt;
+    public int AbilityInt;
 
     public UnitClass Class;
     public UnitSubClass SubClass;
@@ -61,7 +62,7 @@ public class Unit
         Health = health;
         Speed = speed;
 
-        abilityInt = abilityInt;
+        AbilityInt = abilityInt;
 
         Class = unitClass;
         SubClass = unitSubClass;
@@ -70,6 +71,6 @@ public class Unit
 
     public override string ToString()
     {
-        return $"{Name} (Age: {Age}, Class: {Class}, SubClass: {SubClass}, Rarity: {Rarity}, Attack: {Attack}, Defense: {Defense}, Health: {Health}, Speed: {Speed}, Ability: {abilityInt})";
+        return $"{Name} (Age: {Age}, Class: {Class}, SubClass: {SubClass}, Rarity: {Rarity}, Attack: {Attack}, Defense: {Defense}, Health: {Health}, Speed: {Speed}, Ability: {AbilityInt})";
     }
 }
