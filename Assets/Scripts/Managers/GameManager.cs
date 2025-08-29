@@ -13,40 +13,32 @@ public class GameManager : MonoBehaviour
     [Header("UI Parent")]
     public Transform cardParent;
 
-    private void Update()
+    List<Unit> allUnits = new List<Unit>();
+
+    private void Start()
     {
-        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+           allUnits = SaveSystem.LoadAllUnits();
+
+        if (allUnits.Count == 0)
         {
-            SpawnUnit();
+            SpawnUnit(100);
+            SaveSystem.SaveAllUnits(allUnits);
         }
     }
 
-    void SpawnUnit()
+    private void Update()
     {
-
-        Unit newUnit = UnitFactory.GenerateRandomUnit();
-
-        GameObject prefab = GetCardPrefab(newUnit.Class);
-        GameObject cardGo = Instantiate(prefab, cardParent);
-
-        UnitCardUI ui = cardGo.GetComponent<UnitCardUI>();
-        ui.Setup(newUnit, null);
-
+ 
     }
 
-    GameObject GetCardPrefab(UnitClass unitClass)
+    void SpawnUnit(int unitCount)
     {
-        switch (unitClass)
+
+        for (int i = 0; i < unitCount; i++)
         {
-            case UnitClass.Melee:
-                return meleeCardPrefab;
-            case UnitClass.Ranged:
-                return rangedCardPrefab;
-            case UnitClass.Support:
-                return supportCardPrefab;
-            default:
-                Debug.LogError("No prefab found for unit class: " + unitClass);
-                return null;
+            Unit newUnit = UnitFactory.GenerateRandomUnit();
+            allUnits.Add(newUnit);
+
         }
     }
 }

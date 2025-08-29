@@ -15,7 +15,6 @@ public enum UnitSubClass
     // Ranged
     Archer,
     SpearThrower,
-    DartBlower,
 
     // Support
     Healer,
@@ -34,9 +33,28 @@ public enum Rarity
     Legendary
 }
 
+public enum UnitStatus
+{
+    Active,
+    Reserved,
+    NotObtained,
+    Dead
+}
+
+public enum UnitBodyType
+{
+    FemaleThin,
+    FemaleBulky,
+    FemaleFat,
+    MaleThin,
+    MaleBulky,
+    MaleFat
+}
+
 [System.Serializable]
 public class Unit
 {
+    public string ID;
     public string Name;
     public int Age;
 
@@ -45,6 +63,9 @@ public class Unit
     public int Health;
     public int Speed;
 
+    public UnitStatus UnitStatus;
+    public UnitBodyType UnitBodyType;
+
     public int AbilityInt;
 
     public UnitClass Class;
@@ -52,8 +73,10 @@ public class Unit
 
     public Rarity Rarity;
 
-    public Unit(string name, int age, int attack, int defense, int health, int speed, UnitClass unitClass, UnitSubClass unitSubClass, int abilityInt, Rarity rarity)
+    public Unit(string name, int age, int attack, int defense, int health, int speed, UnitBodyType bodyType, UnitClass unitClass, UnitSubClass unitSubClass, int abilityInt, Rarity rarity)
     {
+        ID = System.Guid.NewGuid().ToString();
+
         Name = name;
         Age = age;
 
@@ -61,6 +84,9 @@ public class Unit
         Defense = defense;
         Health = health;
         Speed = speed;
+
+        UnitStatus = UnitStatus.NotObtained;
+        UnitBodyType = bodyType;
 
         AbilityInt = abilityInt;
 
@@ -71,6 +97,7 @@ public class Unit
 
     public override string ToString()
     {
-        return $"{Name} (Age: {Age}, Class: {Class}, SubClass: {SubClass}, Rarity: {Rarity}, Attack: {Attack}, Defense: {Defense}, Health: {Health}, Speed: {Speed}, Ability: {AbilityInt})";
+        return $"{Name} (ID: {ID}, Age: {Age}, Class: {Class}, SubClass: {SubClass}, Rarity: {Rarity}, " +
+               $"Attack: {Attack}, Defense: {Defense}, Health: {Health}, Speed: {Speed}, Ability: {AbilityInt})";
     }
 }

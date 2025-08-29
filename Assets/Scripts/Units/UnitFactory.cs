@@ -18,9 +18,11 @@ public class UnitFactory
         int health = GenerateRandomStat(subClass, "health") * rarityMultiplier;
         int speed = GenerateRandomStat(subClass, "speed") * rarityMultiplier;
 
+        UnitBodyType bodyType = (UnitBodyType)Random.Range(0, System.Enum.GetValues(typeof(UnitBodyType)).Length);
+
         int abilityInt = SetAbilityInt(subClass);
 
-        return new Unit(name, age, attack, defense, health, speed, unitClass, subClass, abilityInt, rarity);
+        return new Unit(name, age, attack, defense, health, speed, bodyType, unitClass, subClass, abilityInt, rarity);
 
     }
 
@@ -82,15 +84,6 @@ public class UnitFactory
             case (UnitSubClass.SpearThrower, "health"):
                 return Random.Range(5, 11);
             case (UnitSubClass.SpearThrower, "speed"):
-                return Random.Range(5, 11);
-
-            case (UnitSubClass.DartBlower, "attack"):
-                return Random.Range(5, 11);
-            case (UnitSubClass.DartBlower, "defense"):
-                return Random.Range(5, 11);
-            case (UnitSubClass.DartBlower, "health"):
-                return Random.Range(5, 11);
-            case (UnitSubClass.DartBlower, "speed"):
                 return Random.Range(5, 11);
 
             case (UnitSubClass.Healer, "attack"):
