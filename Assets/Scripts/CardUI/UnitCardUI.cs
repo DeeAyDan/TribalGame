@@ -15,6 +15,9 @@ public class UnitCardUI : MonoBehaviour
     public TMP_Text speedText;
     public TMP_Text subClassText;
 
+    [HideInInspector]
+    public Unit boundUnit;
+
     public void Setup(Unit data, Sprite portrait = null)
     {
         if (data == null)
@@ -22,6 +25,8 @@ public class UnitCardUI : MonoBehaviour
             Debug.LogError("Unit is null in UnitCardUI.Setup");
             return;
         }
+
+        boundUnit = data;
 
         nameText.text = data.Name;
         ageText.text = $"{data.Age}";
