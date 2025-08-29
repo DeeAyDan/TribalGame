@@ -14,12 +14,15 @@ public class UnitStats : MonoBehaviour
     public float currentSpeed;
     public float currentDefense;
 
+    public bool taunting;
+
     public Transform spawnPoint;
 
 
     public float currentAvrSpeed;
 
     public int abilityCooldown = 0;
+    public int abilityTurns = 0;
 
     void Awake()
     {

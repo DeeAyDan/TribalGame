@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Animations;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -9,12 +10,18 @@ using UnityEditor;
 
 public class FightManager : MonoBehaviour
 {
+    public float camSpeed = 1;
+
     public List<GameObject> team = new List<GameObject>();
+    public List<GameObject> instantiatedTeam = new List<GameObject>();
     public List<GameObject> enemyTeam = new List<GameObject>();
+    public List<GameObject> instantiatedEnemyTeam = new List<GameObject>();
     public List<GameObject> allEntities = new List<GameObject>();
     public Transform[] unitSpawn;
     public Transform[] enemySpawn;
-    public GameObject[] enemySelectButtons;
+    public List<GameObject> enemySelectButtons = new List<GameObject>();
+
+    public GameObject playerSelectInterface;
 
     public GameObject currentAttacker;
     public GameObject currentTarget;
@@ -27,6 +34,11 @@ public class FightManager : MonoBehaviour
     public Transform instantiationParent;
 
     public Transform[] cameraPointsArena;
+
+
+
+
+    public Transform cameraCurMovePoint;
 
     public float avrSpeed;
 
@@ -42,22 +54,28 @@ public class FightManager : MonoBehaviour
         {
             GameObject InstantiatedUnit = Instantiate(team[i], instantiationParent);
             InstantiatedUnit.transform.position = unitSpawn[i].position;
+            InstantiatedUnit.transform.rotation = unitSpawn[i].rotation;
             allEntities.Add(InstantiatedUnit);
+            instantiatedTeam.Add(InstantiatedUnit);
         }
         for (int i = 0; i < enemyTeam.Count; i++)
         {
             GameObject InstantiatedEnemy = Instantiate(enemyTeam[i], instantiationParent);
             InstantiatedEnemy.transform.position = enemySpawn[i].position;
+            InstantiatedEnemy.transform.rotation = enemySpawn[i].rotation;
             allEntities.Add(InstantiatedEnemy);
-            enemySelectButtons[i] = InstantiatedEnemy.transform.GetChild(2).GetChild(0).gameObject;
+            instantiatedEnemyTeam.Add(InstantiatedEnemy);
+            enemySelectButtons.Add(InstantiatedEnemy.transform.GetChild(2).GetChild(0).gameObject);
+            print("instantiated");
         }
-        for (int i = 0; i < enemySelectButtons.Length; i++)
+        for (int i = 0; i < enemySelectButtons.Count; i++)
         {
             enemySelectButtons[i].SetActive(false);
         }
     }
     void Start()
     {
+        playerSelectInterface.SetActive(false);
        avrSpeed = averageSpeed();
        for (int i = 0; i< allEntities.Count; i++)
        {
@@ -67,6 +85,7 @@ public class FightManager : MonoBehaviour
        }
 
         TurnOrderCalculation();
+        
     }
     void Update()
     {
@@ -74,6 +93,7 @@ public class FightManager : MonoBehaviour
         {
             TurnOrderCalculation();
         }
+
         CamMovement();
     }
     public float averageSpeed()
@@ -136,50 +156,74 @@ public class FightManager : MonoBehaviour
                     turnOrder.Sort((a, b) => b.GetComponent<UnitStats>().currentAvrSpeed.CompareTo(a.GetComponent<UnitStats>().currentAvrSpeed));
                 }
             }
-            
-            
-            
-            
+            if(turnOrder.Count == 0) 
+            {
+                TurnOrderCalculation();
+            }
+            else
+            {
+                Turns();
+            }
+
+
+
+
         }
     }
 
     public void Turns()
     {
-        for (int i = 0; i < turnOrder.Count;) 
+
+        CurrentTurn = turnOrder[turnCounter];
+        endTurn = false;
+        for (int i = 0; i < team.Count; i++) 
         {
-            for (int y = 0; y < team.Count; y++) 
+            print("loooppp");
+            if (turnOrder[turnCounter] == instantiatedTeam[i])
             {
-                if (turnOrder[turnCounter] == team[i])
-                {
-                    OpenTurnMenu();
-
-                }
-            }
-            mainCam.transform.position = turnOrder[i].transform.GetChild(1).position;
-            mainCam.transform.rotation = turnOrder[i].transform.GetChild(1).rotation;
-
-            
-            if (endTurn)
-            {
-                turnCounter++;
-                i++;
+                
+                camSpeed = 5f;
+                cameraCurMovePoint = instantiatedTeam[i].transform.GetChild(1);
+                
+                    
+                OpenTurnMenu();
             }
         }
+            
+
+
+
+        if (endTurn)
+        {
+            turnCounter++;
+        }
+        
+        //NextRound();
     }
     public void OpenTurnMenu()
     {
         Debug.Log("Opened Menu");
+        playerSelectInterface.SetActive(true);
     }
     public void OpenAttackSelect()
     {
-        for(int i=0; i<enemySelectButtons.Length; i++)
+        for(int i=0; i<enemySelectButtons.Count; i++)
         {
             enemySelectButtons[i].SetActive(true);
         }
+        cameraCurMovePoint = cameraPointsArena[1];
+    }
+    public void OpenAbilitySelect(string ability)
+    {
+        for (int i = 0; i < enemySelectButtons.Count; i++)
+        {
+            enemySelectButtons[i].SetActive(true);
+        }
+        
     }
     public void Attack(Transform enemy)
     {
-        for (int i = 0; i < enemySelectButtons.Length; i++)
+        for (int i = 0; i < enemySelectButtons.Count; i++)
         {
             enemySelectButtons[i].SetActive(false);
         }
@@ -187,8 +231,48 @@ public class FightManager : MonoBehaviour
         currentAttacker = turnOrder[turnCounter];
         currentTarget = enemy.gameObject;
         currentAttacker.transform.position = enemy.GetChild(4).position;
-        Damage();
+      //  if(currentAttacker.transform.position)
         
+    }
+    public void Ability()
+    {
+        currentAttacker = turnOrder[turnCounter];
+        if (currentAttacker.GetComponent<UnitStats>().charSubClass == "tank") 
+        {
+            
+        }
+        else if (currentAttacker.GetComponent<UnitStats>().charSubClass == "berserker")
+        {
+
+        }
+        else if (currentAttacker.GetComponent<UnitStats>().charSubClass == "Slammer")
+        {
+
+        }
+    }
+    public void AbilityTaunt() 
+    {
+
+    }
+    public void ApplyTaunt() 
+    {
+        
+    }
+    public void GroupDamage() 
+    {
+        
+    }
+    public void ApplyGroupDamage() 
+    {
+        for (int i = 0; i < enemyTeam.Count; i++) 
+        {
+            enemyTeam[i].GetComponent<UnitStats>().currentHealth -= currentAttacker.GetComponent<UnitStats>().currentDamage * (currentTarget.GetComponent<UnitStats>().currentDefense * 0.1f);
+            if (currentTarget.GetComponent<UnitStats>().currentHealth <= 0)
+            {
+                Death(currentTarget);
+            }
+            currentAttacker.transform.position = currentAttacker.GetComponent<UnitStats>().spawnPoint.position;
+        }
     }
     void Damage()
     {
@@ -199,10 +283,7 @@ public class FightManager : MonoBehaviour
         }
         currentAttacker.transform.position = currentAttacker.GetComponent<UnitStats>().spawnPoint.position;
     }
-    public void Ability()
-    {
-
-    }
+    
     public void Item()
     {
 
@@ -218,14 +299,16 @@ public class FightManager : MonoBehaviour
         {
             if (enemyTeam[i] == target)
             {
-                enemyTeam.RemoveAt(i);
+                //enemyTeam.RemoveAt(i);
+                instantiatedEnemyTeam.RemoveAt(i);
             }
         }
         for (int i = 0; i < team.Count; i++)
         {
             if (team[i] == target)
             {
-                team.RemoveAt(i);
+                //team.RemoveAt(i);
+                instantiatedTeam.RemoveAt(i);
             }
         }
         for (int i = 0; i<allEntities.Count; i++)
@@ -243,11 +326,11 @@ public class FightManager : MonoBehaviour
             }
         }
         Destroy(target);
-        if(enemyTeam.Count == 0)
+        if(instantiatedEnemyTeam.Count == 0)
         {
             Win();
         }
-        if(team.Count == 0)
+        if(instantiatedTeam.Count == 0)
         {
             Loose();
         }
@@ -268,7 +351,8 @@ public class FightManager : MonoBehaviour
     }
     public void CamMovement()
     {
-        
+        mainCam.transform.rotation = Quaternion.Lerp(mainCam.transform.rotation, cameraCurMovePoint.rotation, camSpeed* 4 * Time.deltaTime);
+        mainCam.transform.position = Vector3.Lerp(mainCam.transform.position, cameraCurMovePoint.position, camSpeed * Time.deltaTime);
     }
     public void NextRound() 
     {

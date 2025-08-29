@@ -19,6 +19,7 @@ public class SelectAttack : MonoBehaviour
     }
     void SelectClick()
     {
+        print("clicked hehee");
         fightManager.Attack(this.transform.parent.parent);
     }
 }
