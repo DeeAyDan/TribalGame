@@ -17,9 +17,12 @@ public class FightManager : MonoBehaviour
     public List<GameObject> enemyTeam = new List<GameObject>();
     public List<GameObject> instantiatedEnemyTeam = new List<GameObject>();
     public List<GameObject> allEntities = new List<GameObject>();
-    public Transform[] unitSpawn;
-    public Transform[] enemySpawn;
+    public List<Transform> unitSpawn = new List<Transform>();
+    public List<Transform> enemySpawn = new List<Transform>();
     public List<GameObject> enemySelectButtons = new List<GameObject>();
+
+    public Animator curUnitAnim;
+    public AnimationClip[] humanAnimations;
 
     public GameObject playerSelectInterface;
 
@@ -35,8 +38,12 @@ public class FightManager : MonoBehaviour
 
     public Transform[] cameraPointsArena;
 
+    public Transform UnitCurMovePoint;
+    public Transform currentMovingUnit;
 
-
+    
+    
+    public bool dashBack = false;
 
     public Transform cameraCurMovePoint;
 
@@ -47,14 +54,20 @@ public class FightManager : MonoBehaviour
     public List<GameObject> turnOrder = new List<GameObject>();
     public List<GameObject> turnOrderReal = new List<GameObject>();
     public List<float> turnOrderCounter = new List<float>();
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
+        List<Unit> allUnits = SaveSystemUnits.LoadAllUnits();
+        List<Unit> activeUnits = allUnits.FindAll(u => u.UnitStatus == UnitStatus.Active);
+
         for (int i = 0; i < team.Count; i++)
         {
             GameObject InstantiatedUnit = Instantiate(team[i], instantiationParent);
             InstantiatedUnit.transform.position = unitSpawn[i].position;
             InstantiatedUnit.transform.rotation = unitSpawn[i].rotation;
+            InstantiatedUnit.GetComponent<UnitStats>().spawnPoint = unitSpawn[i];
             allEntities.Add(InstantiatedUnit);
             instantiatedTeam.Add(InstantiatedUnit);
         }
@@ -63,6 +76,7 @@ public class FightManager : MonoBehaviour
             GameObject InstantiatedEnemy = Instantiate(enemyTeam[i], instantiationParent);
             InstantiatedEnemy.transform.position = enemySpawn[i].position;
             InstantiatedEnemy.transform.rotation = enemySpawn[i].rotation;
+            InstantiatedEnemy.GetComponent<UnitStats>().spawnPoint = enemySpawn[i];
             allEntities.Add(InstantiatedEnemy);
             instantiatedEnemyTeam.Add(InstantiatedEnemy);
             enemySelectButtons.Add(InstantiatedEnemy.transform.GetChild(2).GetChild(0).gameObject);
@@ -95,6 +109,7 @@ public class FightManager : MonoBehaviour
         }
 
         CamMovement();
+        CharacterMovement();
     }
     public float averageSpeed()
     {
@@ -169,6 +184,7 @@ public class FightManager : MonoBehaviour
 
 
         }
+        currentMovingUnit = turnOrder[turnCounter].transform;
     }
 
     public void Turns()
@@ -176,7 +192,7 @@ public class FightManager : MonoBehaviour
 
         CurrentTurn = turnOrder[turnCounter];
         endTurn = false;
-        for (int i = 0; i < team.Count; i++) 
+        for (int i = 0; i < instantiatedTeam.Count; i++) 
         {
             print("loooppp");
             if (turnOrder[turnCounter] == instantiatedTeam[i])
@@ -187,19 +203,39 @@ public class FightManager : MonoBehaviour
                 
                     
                 OpenTurnMenu();
+                break;
+            }
+            
+        }
+        for (int i = 0; i< instantiatedEnemyTeam.Count; i++)
+        {
+            if (turnOrder[turnCounter] == instantiatedEnemyTeam[i])
+            {
+
+                camSpeed = 5f;
+                cameraCurMovePoint = cameraPointsArena[0];
             }
         }
+        
             
 
 
 
-        if (endTurn)
-        {
-            turnCounter++;
-        }
+        
         
         //NextRound();
     }
+
+    public void EnemyMove()
+    {
+        currentAttacker = turnOrder[turnCounter];
+        
+
+        //class
+        //cooldown --> subclass/ability --> casting chance --> target
+        //
+    }
+    
     public void OpenTurnMenu()
     {
         Debug.Log("Opened Menu");
@@ -223,14 +259,20 @@ public class FightManager : MonoBehaviour
     }
     public void Attack(Transform enemy)
     {
+        dashBack = false;
         for (int i = 0; i < enemySelectButtons.Count; i++)
         {
             enemySelectButtons[i].SetActive(false);
         }
-        mainCam.transform.position = cameraPointsArena[1].position;
-        currentAttacker = turnOrder[turnCounter];
         currentTarget = enemy.gameObject;
-        currentAttacker.transform.position = enemy.GetChild(4).position;
+        
+        cameraCurMovePoint = enemy.GetChild(3);
+        UnitCurMovePoint = enemy.GetChild(4);
+        currentAttacker = turnOrder[turnCounter];
+        currentMovingUnit = currentAttacker.transform;
+        curUnitAnim = currentAttacker.GetComponent<Animator>();
+       // currentAttacker.transform.position = enemy.GetChild(4).position;
+
       //  if(currentAttacker.transform.position)
         
     }
@@ -274,14 +316,18 @@ public class FightManager : MonoBehaviour
             currentAttacker.transform.position = currentAttacker.GetComponent<UnitStats>().spawnPoint.position;
         }
     }
-    void Damage()
+    public void Damage()
     {
+        print(currentTarget);
         currentTarget.GetComponent<UnitStats>().currentHealth -= currentAttacker.GetComponent<UnitStats>().currentDamage * (currentTarget.GetComponent<UnitStats>().currentDefense * 0.1f);
         if (currentTarget.GetComponent<UnitStats>().currentHealth <= 0) 
         {
             Death(currentTarget);
         }
-        currentAttacker.transform.position = currentAttacker.GetComponent<UnitStats>().spawnPoint.position;
+        
+
+        UnitCurMovePoint = currentAttacker.GetComponent<UnitStats>().spawnPoint;
+        EndTurn();
     }
     
     public void Item()
@@ -295,20 +341,22 @@ public class FightManager : MonoBehaviour
     
     public void Death(GameObject target)
     {
-        for(int i = 0; i<enemyTeam.Count; i++)
+        for(int i = 0; i<instantiatedEnemyTeam.Count; i++)
         {
-            if (enemyTeam[i] == target)
+            if (instantiatedEnemyTeam[i] == target)
             {
                 //enemyTeam.RemoveAt(i);
                 instantiatedEnemyTeam.RemoveAt(i);
+                enemySpawn.RemoveAt(i);
             }
         }
-        for (int i = 0; i < team.Count; i++)
+        for (int i = 0; i < instantiatedTeam.Count; i++)
         {
-            if (team[i] == target)
+            if (instantiatedTeam[i] == target)
             {
                 //team.RemoveAt(i);
                 instantiatedTeam.RemoveAt(i);
+                unitSpawn.RemoveAt(i);
             }
         }
         for (int i = 0; i<allEntities.Count; i++)
@@ -347,12 +395,37 @@ public class FightManager : MonoBehaviour
     
     public void EndTurn()
     {
-        endTurn = true;
+        turnCounter++;
+        Turns();
     }
     public void CamMovement()
     {
-        mainCam.transform.rotation = Quaternion.Lerp(mainCam.transform.rotation, cameraCurMovePoint.rotation, camSpeed* 4 * Time.deltaTime);
+        mainCam.transform.rotation = Quaternion.Lerp(mainCam.transform.rotation, cameraCurMovePoint.rotation, camSpeed * Time.deltaTime);
         mainCam.transform.position = Vector3.Lerp(mainCam.transform.position, cameraCurMovePoint.position, camSpeed * Time.deltaTime);
+    }
+    public void CharacterMovement() 
+    {
+        if(currentMovingUnit!= null && UnitCurMovePoint != null)
+        {
+            currentMovingUnit.transform.position = Vector3.MoveTowards(currentMovingUnit.transform.position, UnitCurMovePoint.transform.position, 1f * Time.deltaTime);
+            if (currentMovingUnit.transform.position != UnitCurMovePoint.transform.position)
+            {
+                if (!dashBack)
+                {
+                    curUnitAnim.Play("DashForward");
+                }
+                else
+                {
+                    curUnitAnim.Play("DashBack");
+                }
+
+            }
+            if (currentMovingUnit.transform.position == UnitCurMovePoint.transform.position)
+            {
+                curUnitAnim.Play("SwingHuman");
+            }
+        }
+       
     }
     public void NextRound() 
     {

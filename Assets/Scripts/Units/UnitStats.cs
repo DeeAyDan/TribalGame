@@ -14,6 +14,8 @@ public class UnitStats : MonoBehaviour
     public float currentSpeed;
     public float currentDefense;
 
+    public string status;
+
     public bool taunting;
 
     public Transform spawnPoint;
