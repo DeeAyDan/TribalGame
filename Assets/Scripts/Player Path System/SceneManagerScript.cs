@@ -47,7 +47,7 @@ public class SceneManagerScript : MonoBehaviour
 
     private void Start()
     {
-        MapSaveData data = SaveSystem.LoadMap();
+        MapSaveData data = LevelSelectionSaveSystem.LoadMap();
         if (data != null)
         {
             Load(data);
@@ -211,17 +211,17 @@ public class SceneManagerScript : MonoBehaviour
     public void SaveGame()
     {
         MapSaveData data = Save();         // Step 1: convert map -> plain data
-        SaveSystem.SaveMap(data);          // Step 2: write to disk
+        LevelSelectionSaveSystem.SaveMap(data);          // Step 2: write to disk
     }
 
     public void DeleteSavedData()
     {
-        SaveSystem.DeleteSave();
+        LevelSelectionSaveSystem.DeleteSave();
     }
 
     public void LoadGame()
     {
-        MapSaveData data = SaveSystem.LoadMap(); // Step 1: read from disk
+        MapSaveData data = LevelSelectionSaveSystem.LoadMap(); // Step 1: read from disk
         if (data != null)
         {
             Load(data);                    // Step 2: rebuild map from data

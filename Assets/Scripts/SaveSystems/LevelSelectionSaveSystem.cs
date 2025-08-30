@@ -1,7 +1,7 @@
 using System.IO;
 using UnityEngine;
 
-public static class SaveSystem
+public static class LevelSelectionSaveSystem
 {
     private static string savePath = Application.persistentDataPath + "/mapSave.json";
 
