@@ -6,42 +6,44 @@ public class SlotDropHandler : MonoBehaviour, IDropHandler
 {
     public void OnDrop(PointerEventData eventData)
     {
-        GameObject droppedObj = eventData.pointerDrag;
-        if (droppedObj == null) return;
+        GameObject droppedCard = eventData.pointerDrag;
+        if (droppedCard == null) return;
 
-        CardDragHandler dragHandler = droppedObj.GetComponent<CardDragHandler>();
-        if (dragHandler == null) return;
+        UnitCardUI droppedCardUI = droppedCard.GetComponent<UnitCardUI>();
+        CardDragHandler dragHandler = droppedCard.GetComponent<CardDragHandler>();
+        if (droppedCardUI == null || dragHandler == null) return;
 
-        Transform oldParent = dragHandler.originalParent;
-        Transform newParent = this.transform;
+        // Check if this slot already has a card (ignoring background images)
+        UnitCardUI existingCard = GetComponentInChildren<UnitCardUI>();
 
-        if (newParent == oldParent)
+        if (existingCard != null && existingCard.gameObject != droppedCard)
         {
-            droppedObj.transform.SetParent(newParent, false);
-            droppedObj.transform.localPosition = Vector3.zero;
-            return;
-        }
+            // --- Swap ---
+            Transform existingSlot = existingCard.transform.parent;
+            Transform droppedSlot = dragHandler.originalParent; // where the dragged card came from
 
-        GameObject existingCard = null;
-        if (newParent.childCount > 0)
+            existingCard.transform.SetParent(droppedSlot, false);
+            droppedCard.transform.SetParent(existingSlot, false);
+
+            existingCard.transform.localPosition = Vector3.zero;
+            droppedCard.transform.localPosition = Vector3.zero;
+
+            // Update + save statuses
+            UpdateUnitStatusFromParent(existingCard.gameObject, existingSlot);
+            UpdateUnitStatusFromParent(droppedCard, existingSlot);
+            PersistStatusOf(existingCard.gameObject);
+            PersistStatusOf(droppedCard);
+        }
+        else
         {
-            existingCard = newParent.GetChild(0).gameObject;
+            // --- Place in empty slot ---
+            droppedCard.transform.SetParent(transform, false);
+            droppedCard.transform.localPosition = Vector3.zero;
+
+            // Update + save status
+            UpdateUnitStatusFromParent(droppedCard, transform);
+            PersistStatusOf(droppedCard);
         }
-
-        if (existingCard != null)
-        { 
-            existingCard.transform.SetParent(oldParent, false);
-            existingCard.transform.SetSiblingIndex(dragHandler.originalSiblingIndex);
-            UpdateUnitStatusFromParent(existingCard, oldParent);
-        }
-
-        droppedObj.transform.SetParent(newParent, false);
-        droppedObj.transform.localPosition = Vector3.zero;
-
-        UpdateUnitStatusFromParent(droppedObj, newParent);
-
-        PersistStatusOf(droppedObj);
-        if (existingCard != null) PersistStatusOf(existingCard);
     }
 
     private void UpdateUnitStatusFromParent(GameObject cardObj, Transform parentSlot)

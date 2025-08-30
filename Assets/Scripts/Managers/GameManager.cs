@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-           allUnits = SaveSystemUnits.LoadAllUnits();
+        allUnits = SaveSystemUnits.LoadAllUnits();
 
         if (allUnits.Count == 0)
         {
