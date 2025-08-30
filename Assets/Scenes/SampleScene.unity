@@ -609,7 +609,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a1c89bc24f879d4c9ef2a3a85fc1025, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GmaeManager
-  unitPrefab: {fileID: 3886455140054821928, guid: eac36580ac7ecf54c8e8ce9d9120a239, type: 3}
+  meleeCardPrefab: {fileID: 0}
+  rangedCardPrefab: {fileID: 0}
+  supportCardPrefab: {fileID: 0}
+  cardParent: {fileID: 0}
 --- !u!4 &1617671956
 Transform:
   m_ObjectHideFlags: 0
