@@ -29,6 +29,7 @@ public class InventoryManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -50,38 +51,49 @@ public class InventoryManager : MonoBehaviour
     public void AddAttackBoost(int amount)
     {
         attackBoostCount += amount;
-        attackBoostCountText.text = defenseBoostCount.ToString();
+        attackBoostCountText.text = attackBoostCount.ToString();
     }
 
     public void AddSpeedBoost(int amount)
     {
         speedBoostCount += amount;
-        speedBoostCountText.text = defenseBoostCount.ToString();
+        speedBoostCountText.text = speedBoostCount.ToString();
     }
 
     public void AddHeal(int amount)
     {
         healCount += amount;
-        healCountText.text = defenseBoostCount.ToString();
+        healCountText.text = healCount.ToString();
     }
 
+    #region Food Methods
     public void AddBerries(int amount)
     {
         berriesCount += amount;
-        berriesCountText.text = defenseBoostCount.ToString();
+        if (berriesCount < 0) berriesCount = 0;
+        berriesCountText.text = berriesCount.ToString();
     }
 
     public void AddCarrots(int amount)
     {
         carrotsCount += amount;
-        carrotsCountText.text = defenseBoostCount.ToString();
+        if (carrotsCount < 0) carrotsCount = 0;
+        carrotsCountText.text = carrotsCount.ToString();
     }
 
-    public void AddMeating(int amount)
+    public void AddMeat(int amount)
     {
         meatCount += amount;
-        meatCountText.text = defenseBoostCount.ToString();
+        if (meatCount < 0) meatCount = 0;
+        meatCountText.text = meatCount.ToString();
     }
+
+    // Getters
+    public int GetBerriesCount() => berriesCount;
+    public int GetCarrotsCount() => carrotsCount;
+    public int GetMeatCount() => meatCount;
+    #endregion
+
 
     #region Save/Load
     public void SaveInventory()
