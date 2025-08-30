@@ -17,12 +17,12 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-           allUnits = SaveSystem.LoadAllUnits();
+           allUnits = SaveSystemUnits.LoadAllUnits();
 
         if (allUnits.Count == 0)
         {
             SpawnUnit(100);
-            SaveSystem.SaveAllUnits(allUnits);
+            SaveSystemUnits.SaveAllUnits(allUnits);
         }
     }
 

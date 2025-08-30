@@ -13,7 +13,7 @@ public class UnitListWrapper
     }
 }
 
-public class SaveSystem
+public class SaveSystemUnits
 {
     private static string SavePath => Application.persistentDataPath + "/units.json";
     public static void SaveAllUnits(List<Unit> allUnits)

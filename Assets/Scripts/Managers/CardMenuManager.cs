@@ -47,7 +47,7 @@ public class CardMenuManager : MonoBehaviour
 
     private void PopulateFromSave()
     {
-        List<Unit> allUnits = SaveSystem.LoadAllUnits();
+        List<Unit> allUnits = SaveSystemUnits.LoadAllUnits();
 
         List<Unit> activeUnits = allUnits.FindAll(u => u.UnitStatus == UnitStatus.Active);
         List<Unit> reservedUnits = allUnits.FindAll(u => u.UnitStatus == UnitStatus.Reserved);

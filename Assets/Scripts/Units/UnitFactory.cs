@@ -169,18 +169,16 @@ public class UnitFactory
                 return 4;
             case UnitSubClass.SpearThrower:
                 return 5;
-            case UnitSubClass.DartBlower:
-                return 6;
             case UnitSubClass.Healer:
-                return 7;
+                return 6;
             case UnitSubClass.Runner:
-                return 8;
+                return 7;
             case UnitSubClass.Herbalist:
-                return 9;
+                return 8;
             case UnitSubClass.Crafter:
-                return 10;
+                return 9;
             case UnitSubClass.Alchemist:
-                return 11;
+                return 10;
             default:
                 return 0;
         }

@@ -63,7 +63,7 @@ public class SlotDropHandler : MonoBehaviour, IDropHandler
         UnitCardUI ui = cardObj.GetComponent<UnitCardUI>();
         if (ui == null || ui.boundUnit == null) return;
 
-        List<Unit> all = SaveSystem.LoadAllUnits();
+        List<Unit> all = SaveSystemUnits.LoadAllUnits();
         Unit found = all.Find(x => x.ID == ui.boundUnit.ID);
 
         if (found != null)
@@ -74,6 +74,6 @@ public class SlotDropHandler : MonoBehaviour, IDropHandler
         {
             all.Add(ui.boundUnit);
         }
-        SaveSystem.SaveAllUnits(all);
+        SaveSystemUnits.SaveAllUnits(all);
     }
 }
