@@ -64,15 +64,13 @@ public class SceneManagerScript : MonoBehaviour
         SaveGame();
     }
 
-
-
     void AddNodes()
     {
         List<int> sceneNumbers = Enumerable.Range(0, totalScene).ToList();
 
         int sceneNumber = sceneNumbers[0];
         sceneNumbers.Remove(sceneNumber);
-        GameObject obj = InstantiateNodes(Col2Parent, sceneNumber, Vector3.down * 425);
+        GameObject obj = InstantiateNodes(Col2Parent, sceneNumber, Vector3.down * 425, NodeType.Other);
         nodeSceneMap[sceneNumber] = obj;
 
 
@@ -97,7 +95,34 @@ public class SceneManagerScript : MonoBehaviour
             sceneNumber = sceneList[Random.Range(0, sceneList.Count)];
             sceneList.Remove(sceneNumber);
 
-            GameObject obj = InstantiateNodes(parent, sceneNumber, new Vector3(offsetX, offsetY, 0));
+            // Selecting Scene Type
+
+            float rand = Random.value * 100f;
+            GameObject obj;
+            if (rand <= 10)
+            {
+                obj = InstantiateNodes(parent, sceneNumber, new Vector3(offsetX, offsetY, 0), NodeType.Berries);
+            }
+            else if (rand <= 20 && rand > 10)
+            {
+                obj = InstantiateNodes(parent, sceneNumber, new Vector3(offsetX, offsetY, 0), NodeType.Carrot);
+            }
+            else if (rand <= 30 && rand > 20)
+            {
+                obj = InstantiateNodes(parent, sceneNumber, new Vector3(offsetX, offsetY, 0), NodeType.Market);
+            }
+            else if (rand <= 47.5 && rand > 30)
+            {
+                obj = InstantiateNodes(parent, sceneNumber, new Vector3(offsetX, offsetY, 0), NodeType.HardCombat);
+            }
+            else if (rand <= 72 && rand > 47.5)
+            {
+                obj = InstantiateNodes(parent, sceneNumber, new Vector3(offsetX, offsetY, 0), NodeType.MediumCombat);
+            }
+            else
+            {
+                obj = InstantiateNodes(parent, sceneNumber, new Vector3(offsetX, offsetY, 0), NodeType.HardCombat);
+            }
 
             objArray[i] = obj;
             offsetY += Random.Range(400, 450);
@@ -108,13 +133,37 @@ public class SceneManagerScript : MonoBehaviour
         }
     }
 
-    GameObject InstantiateNodes(Transform parent, int sceneNumber, Vector3 offset)
+    GameObject InstantiateNodes(Transform parent, int sceneNumber, Vector3 offset, NodeType nodeType)
     {
         GameObject obj = Instantiate(NodePrefab, parent);
         obj.GetComponent<RectTransform>().localPosition = offset;
         Button button = obj.GetComponent<Button>();
-        button.onClick.AddListener(() => LoadScene(sceneNumber));
         button.interactable = false;
+
+        switch (nodeType)
+        {
+            case NodeType.HardCombat:
+                button.onClick.AddListener(() => LoadScene(sceneNumber));
+                break;
+            case NodeType.MediumCombat:
+                button.onClick.AddListener(() => LoadScene(sceneNumber));
+                break;
+            case NodeType.EasyCombat:
+                button.onClick.AddListener(() => LoadScene(sceneNumber));
+                break;
+            case NodeType.Berries:
+                button.onClick.AddListener(() => InventoryManager.Instance.AddBerries(Random.Range(1, 3)));
+                break;
+            case NodeType.Carrot:
+                button.onClick.AddListener(() => InventoryManager.Instance.AddCarrots(1));
+                break;
+            case NodeType.Market:
+                button.onClick.AddListener(() => LoadScene(sceneNumber));
+                break;
+            default:
+                break;
+        }
+
         return obj;
     }
 
@@ -130,7 +179,7 @@ public class SceneManagerScript : MonoBehaviour
 
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         line.angle = angle;
-        line.rect.rotation = Quaternion.Euler(0,0,angle + 90);
+        line.rect.rotation = Quaternion.Euler(0, 0, angle + 90);
 
         line.rect.sizeDelta = new Vector2(line.rect.sizeDelta.x, dir.magnitude);
     }
@@ -219,15 +268,6 @@ public class SceneManagerScript : MonoBehaviour
         LevelSelectionSaveSystem.DeleteSave();
     }
 
-    public void LoadGame()
-    {
-        MapSaveData data = LevelSelectionSaveSystem.LoadMap(); // Step 1: read from disk
-        if (data != null)
-        {
-            Load(data);                    // Step 2: rebuild map from data
-        }
-    }
-
     public MapSaveData Save()
     {
         MapSaveData saveData = new();
@@ -249,8 +289,9 @@ public class SceneManagerScript : MonoBehaviour
             NodeData nodeData = new()
             {
                 sceneNumber = kvp.Key,
-                offset = rect.localPosition,   // <-- Save as local offset
-                parentColumn = parentColumn
+                offset = rect.localPosition,
+                parentColumn = parentColumn,
+                nodeType = NodeType.Berries
             };
 
             saveData.nodes.Add(nodeData);
@@ -278,12 +319,6 @@ public class SceneManagerScript : MonoBehaviour
 
     public void Load(MapSaveData saveData)
     {
-        // Clear old graph and UI
-        foreach (Transform child in Col1Parent) Destroy(child.gameObject);
-        foreach (Transform child in Col2Parent) Destroy(child.gameObject);
-        foreach (Transform child in Col3Parent) Destroy(child.gameObject);
-        foreach (Transform child in LineParent) Destroy(child.gameObject);
-
         graph = new CustomGraph<GameObject>();
         nodeSceneMap = new Dictionary<int, GameObject>();
 
@@ -298,7 +333,7 @@ public class SceneManagerScript : MonoBehaviour
             else if (nodeData.parentColumn == 3) parent = Col3Parent;
 
             // Reuse InstantiateNodes
-            GameObject obj = InstantiateNodes(parent, nodeData.sceneNumber, nodeData.offset);
+            GameObject obj = InstantiateNodes(parent, nodeData.sceneNumber, nodeData.offset, nodeData.nodeType);
 
             graph.AddNode(obj);
             nodeSceneMap[nodeData.sceneNumber] = obj;
@@ -321,13 +356,26 @@ public class SceneManagerScript : MonoBehaviour
     #endregion
 }
 
+public enum NodeType
+{
+    HardCombat,
+    MediumCombat,
+    EasyCombat,
+    Berries,
+    Carrot,
+    Market,
+    Other
+}
+
+#region Save Data
 
 [System.Serializable]
 public class NodeData
 {
-    public int sceneNumber;          // The scene this node loads
-    public Vector3 offset;         // Position of the node (localPosition)
+    public int sceneNumber;            // The scene this node loads
+    public Vector3 offset;            // Position of the node (localPosition)
     public int parentColumn;         // 1 = Col1, 2 = Col2, 3 = Col3
+    public NodeType nodeType;       // Type of the Node
 }
 
 [System.Serializable]
@@ -343,3 +391,5 @@ public class MapSaveData
     public List<NodeData> nodes = new();
     public List<ConnectionData> connections = new();
 }
+
+#endregion

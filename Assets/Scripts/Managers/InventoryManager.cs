@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
 {
+    public static InventoryManager Instance;
+
     [Header("Items")]
     int defenseBoostCount;
     int attackBoostCount;
@@ -23,6 +25,18 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] TMP_Text meatCountText;
 
     private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Start()
     {
         LoadInventory();
     }
