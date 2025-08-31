@@ -304,6 +304,11 @@ public class FightManager : MonoBehaviour
     {
         
     }
+    public void GoBack()
+    {
+        UnitCurMovePoint = currentAttacker.GetComponent<UnitStats>().spawnPoint;
+        EndTurn();
+    }
     public void ApplyGroupDamage() 
     {
         for (int i = 0; i < enemyTeam.Count; i++) 
@@ -313,7 +318,7 @@ public class FightManager : MonoBehaviour
             {
                 Death(currentTarget);
             }
-            currentAttacker.transform.position = currentAttacker.GetComponent<UnitStats>().spawnPoint.position;
+            //currentAttacker.transform.position = currentAttacker.GetComponent<UnitStats>().spawnPoint.position;
         }
     }
     public void Damage()
@@ -326,8 +331,7 @@ public class FightManager : MonoBehaviour
         }
         
 
-        UnitCurMovePoint = currentAttacker.GetComponent<UnitStats>().spawnPoint;
-        EndTurn();
+        
     }
     
     public void Item()

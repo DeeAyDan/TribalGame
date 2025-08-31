@@ -9,4 +9,8 @@ public class UnitController : MonoBehaviour
         fightManager.Damage();
         print("Damage");
     }
+    public void GoBack() 
+    {
+        fightManager.GoBack();
+    }
 }
